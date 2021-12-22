@@ -1,3 +1,5 @@
+#![feature(iter_advance_by)]
+
 use std::env;
 
 mod day_01;

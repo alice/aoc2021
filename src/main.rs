@@ -4,12 +4,14 @@ use std::env;
 
 mod day_01;
 mod day_02;
+mod day_03;
 
 fn main() {
     // parse which day it is
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
-	panic!("Expected day argument");
+        day_03::run();
+        return;
     }
     
     let day = &args[1];
@@ -17,6 +19,6 @@ fn main() {
     match day.as_ref() {
 	"1" => day_01::run(),
 	"2" => day_02::run(),
-	_ => panic!("No day {}", day),
+        "3" | _ => day_03::run(),
     }
 }

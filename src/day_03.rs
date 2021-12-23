@@ -7,7 +7,9 @@ pub fn run() {
     loop {
         let mut line = String::new();
         match io::stdin().read_line(&mut line) {
-            Ok(0) => { break; }
+            Ok(0) => {
+                break;
+            }
             Ok(_) => {
                 line = line.trim().to_string();
                 if size == 0 {
@@ -17,39 +19,79 @@ pub fn run() {
                 let binary = u32::from_str_radix(&line, 2).unwrap();
                 diagnostic.push(binary);
             }
-            Err(err) => {
+            Err(_) => {
                 panic!("bad line: {}", line);
             }
         }
     }
 
-    let mut bits: Vec::<i32> = vec![0; size];
-    for binary in diagnostic {
-        println!("binary: {:b}", binary);
-        let mut tmp = binary;
-        for i in 1..(size + 1) {
-            let lsb = tmp & 1;
-            match lsb {
-                0 => { bits[size - i] -= 1; }
-                1 => { bits[size - i] += 1; }
-                _ => { }
-            }
-            tmp >>= 1;
-        }
-    }
-    println!("bits: {:?}", bits);
-    
-    let mut gamma: u32 = 0;
-    let mut epsilon: u32 = 0;
-    for i in 0..size {
-        gamma <<= 1;
-        epsilon <<= 1;
-        if bits[i] > 0 {
-            gamma += 1;
-        } else {
-            epsilon += 1;
-        }
-    }
+    let mut potential_oxygen_ratings = diagnostic.to_vec();
 
-    println!("gamma: {:b}\nepsilon: {:b}\nconsumption: {}", gamma, epsilon, gamma * epsilon);
+    let mut pos = size;
+    loop {
+        pos -= 1;
+        let mut count = 0;
+        let mask = 1 << pos;
+        for binary in &potential_oxygen_ratings {
+            let bit = (*binary & mask) / mask;
+            match bit {
+                0 => {
+                    count -= 1;
+                }
+                1 => {
+                    count += 1;
+                }
+                _ => {}
+            }
+        }
+
+        let filter = (if count >= 0 { 1 } else { 0 }) << pos;
+        let _ = potential_oxygen_ratings
+            .drain_filter(|x| *x & mask != filter)
+            .count();
+        println!("after draining: {:?}", potential_oxygen_ratings);
+
+        if potential_oxygen_ratings.len() == 1 {
+            break;
+        }
+    }
+    let oxygen_rating = potential_oxygen_ratings[0];
+
+    let mut potential_carbon_ratings = diagnostic.to_vec();
+    let mut pos = size;
+    loop {
+        pos -= 1;
+        let mut count = 0;
+        let mask = 1 << pos;
+        for binary in &potential_carbon_ratings {
+            let bit = (*binary & mask) / mask;
+            match bit {
+                1 => {
+                    count -= 1;
+                }
+                0 => {
+                    count += 1;
+                }
+                _ => {}
+            }
+        }
+
+        let filter = (if count > 0 { 1 } else { 0 }) << pos;
+        let _ = potential_carbon_ratings
+            .drain_filter(|x| *x & mask != filter)
+            .count();
+        println!("after draining: {:?}", potential_carbon_ratings);
+
+        if potential_carbon_ratings.len() == 1 {
+            break;
+        }
+    }
+    let carbon_rating = potential_carbon_ratings[0];
+
+    println!(
+        "oxygen_rating: {:?}, carbon_rating: {:?}, product: {}",
+        oxygen_rating,
+        carbon_rating,
+        oxygen_rating * carbon_rating
+    );
 }

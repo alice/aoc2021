@@ -24,11 +24,12 @@ impl FromStr for Instruction {
 #[derive(Debug)]
 struct Location {
     x: i32,
-    y: i32,
+    depth: i32,
+    aim: i32,
 }
 
 pub fn run() {
-    let mut location  = Location{x: 0, y: 0};
+    let mut location  = Location{x: 0, depth: 0, aim: 0};
 
     loop {
 	let mut line = String::new();
@@ -40,9 +41,12 @@ pub fn run() {
 		// parse instruction
 		let instruction: Instruction = line.parse().unwrap();
 		match instruction.dir.as_str() {
-		    "forward" => { location.x += instruction.dist },
-		    "up" => { location.y -= instruction.dist },
-		    "down" => { location.y += instruction.dist },
+		    "forward" => {
+			location.x += instruction.dist;
+			location.depth += location.aim * instruction.dist;
+		    }
+		    "up" => { location.aim -= instruction.dist }
+		    "down" => { location.aim += instruction.dist },
 		    &_ => {},
 		};
 	    }
@@ -52,5 +56,5 @@ pub fn run() {
 	}
     }
 
-    println!("{:?} -> {}", location, location.x * location.y);
+    println!("{:?} -> {}", location, location.x * location.depth);
 }

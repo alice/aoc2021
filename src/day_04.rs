@@ -5,6 +5,7 @@ struct Bingo {
     rows: [[i32; 6]; 5],
     cols: [i32; 5],
     marked: [[bool; 5]; 5],
+    bingo: bool,
 }
 
 impl Bingo {
@@ -13,6 +14,7 @@ impl Bingo {
             rows: [[0; 6]; 5],
             cols: [0; 5],
             marked: [[false; 5]; 5],
+            bingo: false,
         };
     }
     
@@ -30,7 +32,6 @@ impl Bingo {
     }
 
     pub fn mark(&mut self, n: i32) -> bool {
-        let mut bingo: bool = false;
         for r in 0..5 {
             for c in 0..5 {
                 if self.rows[r][c] == n {
@@ -38,13 +39,13 @@ impl Bingo {
                     self.cols[c] += 1;
                     self.marked[r][c] = true;
                     if self.rows[r][5] == 5 || self.cols[c] == 5 {
-                        bingo = true;
+                        self.bingo = true;
                     }
                 }
             }
         }
 
-        return bingo;
+        return self.bingo;
     }
 
     pub fn sum_unmarked(&self) -> i32 {
@@ -96,10 +97,12 @@ pub fn run() {
 
     for n in numbers {
         for bingo in &mut boards {
+            if bingo.bingo {
+                continue;
+            }
             if bingo.mark(n) {
                 let sum = bingo.sum_unmarked();
                 println!("bingo! {:?} x {} = {}", sum, n, sum * n);
-                return;
             }
         }
     }

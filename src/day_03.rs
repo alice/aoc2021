@@ -2,9 +2,9 @@ use std::io;
 
 pub fn run() {
     let mut diagnostic = Vec::<u32>::new();
-    let size = read_diagnostic_from_file(&mut diagnostic);
+    let size = read_diagnostic_from_stdin(&mut diagnostic);
 
-    let mut pos = size - 1;
+    let pos = size - 1;
     let mut potential_oxygen_ratings = diagnostic.to_vec();
     let mask = 1 << pos;
     let filter = most_common_bit(pos, &potential_oxygen_ratings) << pos;
@@ -32,7 +32,6 @@ fn find_rating(potential_ratings: &mut Vec<u32>, start_pos: usize, most: bool) -
     let mut pos = start_pos;
     loop {
         pos -= 1;
-        let mut count = 0;
         let mask = 1 << pos;
         let most_common = most_common_bit(pos, &potential_ratings);
         let bit = if most { most_common } else { most_common ^ 1 };
@@ -51,7 +50,6 @@ fn find_rating(potential_ratings: &mut Vec<u32>, start_pos: usize, most: bool) -
             return potential_ratings[0];
         }
     }
-    panic!("No rating found");
 }
 
 fn most_common_bit(pos: usize, diagnostic: &Vec<u32>) -> u32 {
@@ -73,7 +71,7 @@ fn most_common_bit(pos: usize, diagnostic: &Vec<u32>) -> u32 {
     return if count >= 0 { 1 } else { 0 };
 }
 
-fn read_diagnostic_from_file(diagnostic: &mut Vec<u32>) -> usize {
+fn read_diagnostic_from_stdin(diagnostic: &mut Vec<u32>) -> usize {
     let mut size: usize = 0;
 
     loop {

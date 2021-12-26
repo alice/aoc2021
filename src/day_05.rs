@@ -24,6 +24,7 @@ impl FromStr for Point {
     }
 }
 
+#[derive(Debug)]
 struct LineSegment {
     pub start: Point,
     pub end: Point,
@@ -46,16 +47,10 @@ impl FromStr for LineSegment {
         if let [p1_str, p2_str] = s.trim().split(" -> ").collect::<Vec<&str>>().as_slice() {
             let p1: Point = p1_str.parse().unwrap();
             let p2: Point = p2_str.parse().unwrap();
-            if p1.x < p2.x || p1.y < p2.y {
-                return Ok(LineSegment {
-                    start: p1,
-                    end: p2,
-                });
+            if p1.x < p2.x || (p1.x == p2.x && p1.y < p2.y) {
+                return Ok(LineSegment { start: p1, end: p2 });
             } else {
-                return Ok(LineSegment {
-                    start: p2,
-                    end: p1,
-                });
+                return Ok(LineSegment { start: p2, end: p1 });
             }
         }
         panic!("could not parse {}", s);
@@ -82,7 +77,6 @@ impl Grid {
                 let point = Point { x: x, y: y };
                 if self.grid.contains_key(&point) {
                     self.danger.insert(point);
-//                    println!("danger: {:?}", point);
                     *(self.grid.get_mut(&point).unwrap()) += 1;
                 } else {
                     self.grid.insert(point, 1);
@@ -93,7 +87,22 @@ impl Grid {
             for y in segment.start.y..=segment.end.y {
                 let point = Point { x: x, y: y };
                 if self.grid.contains_key(&point) {
-//                    println!("danger: {:?}", point);
+                    self.danger.insert(point);
+                    *(self.grid.get_mut(&point).unwrap()) += 1;
+                } else {
+                    self.grid.insert(point, 1);
+                }
+            }
+        } else {
+            let x_range = segment.start.x..=segment.end.x;
+            let y_range: Vec<u32> = if segment.start.y < segment.end.y {
+                (segment.start.y..=segment.end.y).collect()
+            } else {
+                (segment.end.y..=segment.start.y).rev().collect()
+            };
+            for (x, y) in x_range.zip(y_range) {
+                let point = Point { x: x, y: y };
+                if self.grid.contains_key(&point) {
                     self.danger.insert(point);
                     *(self.grid.get_mut(&point).unwrap()) += 1;
                 } else {

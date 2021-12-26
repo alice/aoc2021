@@ -8,12 +8,13 @@ mod day_02;
 mod day_03;
 mod day_04;
 mod day_05;
+mod day_06;
 
 fn main() {
     // parse which day it is
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
-        day_05::run();
+        day_06::run();
         return;
     }
     
@@ -25,6 +26,7 @@ fn main() {
         "3" => day_03::run(),
         "4" => day_04::run(),
         "5" => day_05::run(),
+        "6" => day_06::run(),
         _ => panic!("that's not a day"),
     }
 }

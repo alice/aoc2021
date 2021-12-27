@@ -1,5 +1,6 @@
 #![feature(iter_advance_by)]
 #![feature(drain_filter)]
+#![feature(io_read_to_string)]
 
 use std::env;
 
@@ -10,12 +11,13 @@ mod day_04;
 mod day_05;
 mod day_06;
 mod day_07;
+mod day_08;
 
 fn main() {
     // parse which day it is
     let args: Vec<String> = env::args().collect();
     if args.len() < 2 {
-        day_07::run();
+        day_08::run();
         return;
     }
     
@@ -29,6 +31,7 @@ fn main() {
         "5" => day_05::run(),
         "6" => day_06::run(),
         "7" => day_07::run(),
+        "8" => day_08::run(),
         _ => panic!("that's not a day"),
     }
 }

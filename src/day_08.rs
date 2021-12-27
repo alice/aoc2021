@@ -9,13 +9,11 @@ pub fn run() {
 
     let mut num_1478s = 0;
     for line in lines {
-        let outputs: Vec<String> = line
-            .split(" | ")
-            .last()
-            .unwrap()
-            .split(" ")
-            .map(|s| s.to_string())
-            .collect();
+        if !(let[input_str, output_str] = line.split(" | ").collect::<Vec<&str>>().as_slice()) {
+            panic!("bad line {}", line);
+        }
+        
+        let outputs: Vec<String> = output_str.split(" ").map(|s| s.to_string()).collect();
 
         for output in outputs {
             match output.len() {
